@@ -1,61 +1,83 @@
-# AI-based-Crop-Disease-Detection-System
-from flask import Flask, request, render_template_string
-import tensorflow as tf
-import numpy as np
-from PIL import Image
-import io
+# AI-Based Crop Disease Detection System
 
-app = Flask(__name__)
+## Overview
 
-# Load the pre-trained model (make sure the model is available)
-model = tf.keras.models.load_model('crop_disease_model.h5')
+This repository contains a Flask application prototype for
+predicting a crop condition from an uploaded plant image.
 
-# Class labels (update these with your actual class names)
-class_labels = ['Healthy', 'Disease A', 'Disease B', 'Disease C', 'Disease D']
+The application uses TensorFlow/Keras to load a trained image
+classification model and return a predicted class.
 
-# Simple HTML form for file upload
-html_form = '''
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Crop Disease Detection</title>
-</head>
-<body>
-    <h1>Upload a Plant Image for Disease Prediction</h1>
-    <form action="/predict" method="POST" enctype="multipart/form-data">
-        <input type="file" name="file" accept="image/*" required>
-        <button type="submit">Predict</button>
-    </form>
-</body>
-</html>
-'''
+**Important:** A compatible trained model and the correct class
+labels are required before the application can produce meaningful
+crop disease predictions.
 
-# Home route that displays the upload form
-@app.route('/')
-def home():
-    return render_template_string(html_form)
+## Features
 
-# Prediction route
-@app.route('/predict', methods=['POST'])
-def predict():
-    if 'file' not in request.files:
-        return 'No file part'
-    
-    file = request.files['file']
-    if file.filename == '':
-        return 'No selected file'
-    
-    image = Image.open(file)
-    image = image.resize((150, 150))  # Resize the image to match the model input size
-    image = np.array(image) / 255.0   # Normalize the image
-    image = np.expand_dims(image, axis=0)  # Add batch dimension
+- Upload a plant image through a web form.
+- Resize and normalize the image before prediction.
+- Run inference with a TensorFlow/Keras model.
+- Display the predicted class.
 
-    prediction = model.predict(image)
-    predicted_class = class_labels[np.argmax(prediction)]  # Get the predicted class
+## Technologies
 
-    return f"Predicted Disease: {predicted_class}"
+- Python
+- Flask
+- TensorFlow / Keras
+- NumPy
+- Pillow
 
-if __name__ == '__main__':
-    app.run(debug=True)
+## Project Structure
+
+```text
+.
+├── README.md
+├── app.py
+├── requirements.txt
+└── crop_disease_model.h5
+```
+
+The model file shown above is required by the current application
+but has not been verified as present in the repository.
+
+## Setup
+
+Install the dependencies:
+
+```bash
+pip install -r requirements.txt
+```
+
+Place a compatible trained model at the configured model path.
+Update the class labels to match the model's output classes.
+
+## Run
+
+```bash
+python app.py
+```
+
+Open the local address printed by Flask in your browser.
+
+## Limitations
+
+- A compatible trained model is required.
+- The current class labels are placeholders.
+- The model's training data, accuracy, and generalization have
+  not been verified.
+- Predictions should not be treated as confirmed agricultural
+  diagnoses.
+- The current application enables Flask debug mode and should
+  not be deployed publicly in its present form.
+
+## Future Improvements
+
+- Document the dataset and training process.
+- Add verified class names and evaluation metrics.
+- Improve image validation and error handling.
+- Add tests and sample images when licensing permits.
+
+## Author
+
+Islam Md Jubayer
+GitHub: https://github.com/jubayeris
